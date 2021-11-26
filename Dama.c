@@ -24,10 +24,10 @@ void Iniciar(unsigned short int tab[10][10]){
        for(j=0;j<10;j++){
          if(j%2!=i%2 && i != 4 && i != 5){
            if(i<4){
-             tab[i][j] = 1;
+             tab[i][j] = 2;
            }
            else if(i>5){
-             tab[i][j] = 3;
+             tab[i][j] = 1;
            }
          }
          else{
@@ -37,28 +37,57 @@ void Iniciar(unsigned short int tab[10][10]){
       }
 }
 
-void Checar(unsigned short int tab[10][10], pos origem, int turno,   bool *is_Peca, char escolha[50]){
-  char naoPeca[50] = "Não há peça nessa casa!\nEscolha novamente: ";
-  char corErrada[50] = "Não é o turno dessa cor\nEscolha novamente: ";
-  if(tab[origem.x][origem.y] != 0){
-    if(turno%2 != 0 && tab[origem.x][origem.y] != 3 && tab[origem.x][origem.y] != 4){
-      //Brancas (azul)
-      strcpy(escolha,corErrada);
-      *is_Peca = false;
-    }
-    else if(turno%2 == 0 && tab[origem.x][origem.y] != 1 && tab[origem.x][origem.y] != 2){
-      //Pretas (vermelhas)
-      strcpy(escolha,corErrada);
-      *is_Peca = false;
+bool Checar(unsigned short int tab[10][10], pos origem, int turno, char escolha[50]){
+
+  if(origem.x < 10 && origem.x >=0 && origem.y < 10 && origem.y >= 0){
+    int peca = tab[origem.x][origem.y];
+    if(peca != 0){
+      if(turno%2 != 0 && peca%2 == 0){
+        //Brancas (azul) peças brancas são impares e o turno também é impar
+        strcpy(escolha,"Não é o turno dessa cor\nEscolha novamente: ");
+      }
+      else if(turno%2 == 0 && peca%2 != 0){
+        //Pretas (vermelhas) peças brancas são pares e o turno também é par
+        strcpy(escolha,"Não é o turno dessa cor\nEscolha novamente: ");
+      }
+      else{
+        if(peca == 1){
+          //peao branco
+          if(tab[origem.x-1][origem.y-1] == 0 || tab[origem.x-1][origem.y+1] == 0 ){
+            return true;
+          }
+          else if((tab[origem.x-1][origem.y-1] == 2 || tab[origem.x-1][origem.y+1] == 2 || tab[origem.x+1][origem.y-1] == 2 || tab[origem.x+1][origem.y+1] == 2) || (tab[origem.x-1][origem.y-1] == 4 || tab[origem.x-1][origem.y+1] == 4 || tab[origem.x+1][origem.y-1] == 4 || tab[origem.x+1][origem.y+1] == 4)){        
+            return true;
+          }
+          else{
+            strcpy(escolha,"Não há movimentos para essa peça\nEscolha novamente: ");
+          }
+        }
+        else if(peca == 2){
+          //peao preto
+          if(tab[origem.x+1][origem.y-1] == 0 || tab[origem.x+1][origem.y+1] == 0){
+            return true;
+          }
+          else if((tab[origem.x-1][origem.y-1] == 1 || tab[origem.x-1][origem.y+1] == 1 || tab[origem.x+1][origem.y-1] == 1 || tab[origem.x+1][origem.y+1] == 1) || (tab[origem.x-1][origem.y-1] == 2 || tab[origem.x-1][origem.y+1] == 2 || tab[origem.x+1][origem.y-1] == 2 || tab[origem.x+1][origem.y+1] == 2)){        
+            return true;
+          }
+          else{
+            strcpy(escolha,"Não há movimentos para essa peça\nEscolha novamente: ");
+          }
+        }
+        // falta as damas
+        else{
+        }
+      }
     }
     else{
-      *is_Peca = true;
+      strcpy(escolha,"Não há peça nessa casa!\nEscolha novamente: ");
     }
   }
   else{
-    strcpy(escolha,naoPeca);
-    *is_Peca = false;
+    strcpy(escolha,"Não há casa nessa posição\nEscolha novamente: ");
   }
+  return false;
 }
 
 void Tela(unsigned short int tab[10][10], pos posicao, int turno){
@@ -70,7 +99,7 @@ void Tela(unsigned short int tab[10][10], pos posicao, int turno){
       i == 9 ? printf("| %d ",i+1):printf("|  %d ",i+1);
       for(j=0;j<10;j++){
           printf("|");
-          if(tab[i][j] == 1 || tab[i][j] == 3){
+          if(tab[i][j] == 1 || tab[i][j] == 2){
             letra = 'P';
           }
           else{
@@ -82,10 +111,10 @@ void Tela(unsigned short int tab[10][10], pos posicao, int turno){
           if(tab[i][j] == 0){
               printf("_");
           }
-          else if(tab[i][j] == 1 || tab[i][j] == 2){
+          else if(tab[i][j] == 2 || tab[i][j] == 4){
             printf("\033[31m%c",letra); //pretas
           }
-          else if(tab[i][j] == 3 || tab[i][j] == 4){
+          else if(tab[i][j] == 1 || tab[i][j] == 3){
             printf("\033[34m%c", letra);//brancas
           }
             printf("\033[0m");
@@ -93,7 +122,7 @@ void Tela(unsigned short int tab[10][10], pos posicao, int turno){
       printf("|   |");
       printf("\n");
     }
-    printf("|     1 2 3 4 5 6 7 8 9 10   |\n");
+    printf("|     a b c d e f g h i j    |\n");
     printf("|____________________________|\n");
     if(turno%2!=0){
       printf("\nTurno das Brancas!");
@@ -102,14 +131,18 @@ void Tela(unsigned short int tab[10][10], pos posicao, int turno){
     }
 }
 
-
-
+//colocar no .h
+void limparBuffer(){ 
+    int ch;
+    while( (ch = fgetc(stdin)) != EOF && ch != '\n' ){} 
+}
 
 int main() {
   
     setlocale(LC_ALL, "Portuguese");
     pos origem, destino;
     origem.x = -1;
+    char letraTab;
     char escolha[50] = "Escolha a peca: ";
 
     struct jogador player1, player2;
@@ -118,7 +151,7 @@ int main() {
 
     unsigned short int tab[10][10];
     int turno = 1, pos1, pos2;
-    bool partida = true, is_Peca = false;
+    bool partida = true, podeMover = false;
 
      Iniciar(tab);
 
@@ -126,13 +159,17 @@ int main() {
 
       Tela(tab,origem,turno);
 
-      while(is_Peca == false){
+      while(podeMover == false){
         printf("\n%s",escolha);
-        scanf(" %d %d", &origem.x,&origem.y);
-        origem.x--;origem.y--;
-        Checar(tab, origem, turno, &is_Peca, escolha);
+        scanf(" %d %c", &origem.x,&letraTab);
+        origem.y = (int)letraTab;
+        origem.x--;origem.y-=97;
+        podeMover = Checar(tab, origem, turno, escolha);
+        
+        limparBuffer();
       }
       //voltar atras na escolha
+      // colocar esses 2 numa função
       system("clear");
       Tela(tab,origem,turno);
       printf("\nEscolha o destino: ");
