@@ -4,179 +4,329 @@
 #include <stdlib.h>
 #include <string.h>
 
-enum cor{
-  Branco,
-  Preto
-}cor;
+typedef struct{
+    int lin;
+    int col;
+    int tipo;
+    int movimento[1][1];
+}Peca;
 
-typedef struct pos{
-  int x;
-  int y;
-}pos;
+void scanfC(char * carac){
+    scanf(" %c", carac);
 
-struct jogador{
-  enum cor Color;
-};
-
-void Iniciar(unsigned short int tab[10][10]){
-  int i,j;
-  for(i=0;i<10;i++){
-       for(j=0;j<10;j++){
-         if(j%2!=i%2 && i != 4 && i != 5){
-           if(i<4){
-             tab[i][j] = 2;
-           }
-           else if(i>5){
-             tab[i][j] = 1;
-           }
-         }
-         else{
-           tab[i][j]=0;
-         }
-        }
-      }
+    // Limpa Buffer
+    fflush(stdin); // no Windows 
+    //__fpurge(stdin); // no Linux
 }
 
-bool Checar(unsigned short int tab[10][10], pos origem, int turno, char escolha[50]){
+int criarMapa(int mapa[10][10]){
+    /*
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 10; j++){
+            mapa[i][j] = 0;
+        }
+    }
 
-  if(origem.x < 10 && origem.x >=0 && origem.y < 10 && origem.y >= 0){
-    int peca = tab[origem.x][origem.y];
-    if(peca != 0){
-      if(turno%2 != 0 && peca%2 == 0){
-        //Brancas (azul) peças brancas são impares e o turno também é impar
-        strcpy(escolha,"Não é o turno dessa cor\nEscolha novamente: ");
-      }
-      else if(turno%2 == 0 && peca%2 != 0){
-        //Pretas (vermelhas) peças brancas são pares e o turno também é par
-        strcpy(escolha,"Não é o turno dessa cor\nEscolha novamente: ");
-      }
-      else{
-        if(peca == 1){
-          //peao branco
-          if(tab[origem.x-1][origem.y-1] == 0 || tab[origem.x-1][origem.y+1] == 0 ){
-            return true;
-          }
-          else if((tab[origem.x-1][origem.y-1] == 2 || tab[origem.x-1][origem.y+1] == 2 || tab[origem.x+1][origem.y-1] == 2 || tab[origem.x+1][origem.y+1] == 2) || (tab[origem.x-1][origem.y-1] == 4 || tab[origem.x-1][origem.y+1] == 4 || tab[origem.x+1][origem.y-1] == 4 || tab[origem.x+1][origem.y+1] == 4)){        
-            return true;
-          }
-          else{
-            strcpy(escolha,"Não há movimentos para essa peça\nEscolha novamente: ");
-          }
+    mapa[3][6] = 1;
+    mapa[1][8] = 1;
+    mapa[3][8] = 1;
+    mapa[4][5] = 2;
+
+    return 0;
+    */
+
+    for(int l = 0; l < 10; l++){
+        for(int c = 0; c < 10; c++){
+            // Se casa n ocupavel
+            if(l%2 == c%2){
+                mapa[l][c] = 0;
+            }else{
+                // Pecas da:
+                if(l < 4){ // Parte de cima
+                    mapa[l][c] = 1;
+                }else if(l > 5){ // Parte de baixo
+                    mapa[l][c] = 2;
+                }else{ // Parte do meio
+                    mapa[l][c] = 0;
+                }
+            }
         }
-        else if(peca == 2){
-          //peao preto
-          if(tab[origem.x+1][origem.y-1] == 0 || tab[origem.x+1][origem.y+1] == 0){
-            return true;
-          }
-          else if((tab[origem.x-1][origem.y-1] == 1 || tab[origem.x-1][origem.y+1] == 1 || tab[origem.x+1][origem.y-1] == 1 || tab[origem.x+1][origem.y+1] == 1) || (tab[origem.x-1][origem.y-1] == 2 || tab[origem.x-1][origem.y+1] == 2 || tab[origem.x+1][origem.y-1] == 2 || tab[origem.x+1][origem.y+1] == 2)){        
-            return true;
-          }
-          else{
-            strcpy(escolha,"Não há movimentos para essa peça\nEscolha novamente: ");
-          }
-        }
-        // falta as damas
-        else{
-        }
-      }
     }
-    else{
-      strcpy(escolha,"Não há peça nessa casa!\nEscolha novamente: ");
-    }
-  }
-  else{
-    strcpy(escolha,"Não há casa nessa posição\nEscolha novamente: ");
-  }
-  return false;
 }
 
-void Tela(unsigned short int tab[10][10], pos posicao, int turno){
-    int i,j;
-    char letra;
-    printf("______________________________\n");
-    printf("|                            |\n");
-    for(i=0;i<10;i++){
-      i == 9 ? printf("| %d ",i+1):printf("|  %d ",i+1);
-      for(j=0;j<10;j++){
+void printMapa(int mapa[10][10], Peca * peca_s){
+    printf("__________________________________\n");
+    printf("|                                |\n");
+    for(int l = 0; l < 10; l++){
+      printf("|");
+      printf("    %2d ", l+1); // Nums da esquerda
+
+      for(int c = 0; c < 10; c++){
           printf("|");
-          if(tab[i][j] == 1 || tab[i][j] == 2){
-            letra = 'P';
-          }
-          else{
-            letra = 'D';
-          }
-          if(posicao.x == i && posicao.y == j){
-            printf("\033[47m");
-          }
-          if(tab[i][j] == 0){
+          int peca = mapa[l][c];
+
+          if(peca == 0){
               printf("_");
+          }else{
+              // Se peca selecionada
+              if(l == (*peca_s).lin && c == (*peca_s).col){
+                  printf("\033[47m");
+              }
+
+              // Se cor vermelha/preta
+              if(peca%2 == 1){
+                  printf("\033[31m");
+              }else{
+                  printf("\033[34m");
+              }
+              if(peca < 3){
+                  printf("P");
+              }else{
+                  printf("D");
+              }
+              
+              printf("\033[0m");
           }
-          else if(tab[i][j] == 2 || tab[i][j] == 4){
-            printf("\033[31m%c",letra); //pretas
-          }
-          else if(tab[i][j] == 1 || tab[i][j] == 3){
-            printf("\033[34m%c", letra);//brancas
-          }
-            printf("\033[0m");
-      }
-      printf("|   |");
-      printf("\n");
+        }
+        printf("|    |\n");
     }
-    printf("|     a b c d e f g h i j    |\n");
-    printf("|____________________________|\n");
-    if(turno%2!=0){
-      printf("\nTurno das Brancas!");
+    printf("|        a b c d e f g h i j     |\n");
+    printf("|________________________________|\n\n");
+}
+
+int Acoes(int mapa[10][10], Peca * peca){
+    int resp = 0;
+
+    for(int i = 0; i < 1+(peca->tipo>2)*2; i+=2){
+        for(int j = -1; j < 2; j += 2){
+            //        (      direcao    ) * (inverte?)
+            int dir = ((peca->tipo % 2)*2 - 1) * (1-i);
+
+            int lin_d = peca->lin+dir;
+            int col_d = peca->col+j;
+
+            // Dentro do tabuleiro
+            if((-1 < lin_d && lin_d < 10) && (-1 < col_d && col_d < 10)){
+                int casaDPS = mapa[lin_d+dir][col_d+(j*2)];
+
+                // Pode Comer
+                printf("D: %d, PS: %d, CDPS: %d\n", mapa[lin_d][col_d]%2, peca->tipo%2, casaDPS);
+                if(mapa[lin_d][col_d]%2 != peca->tipo%2 && casaDPS == 0){
+                    return 2;
+                }
+
+                // Pode Mover
+                if(mapa[lin_d][col_d] == 0){
+                    resp = 1;
+                }
+
+            }
+        }
+    }
+
+    // Sem Acoes
+    return resp;
+}
+
+int escolherPeca(int mapa[10][10], Peca * peca, int * turno){
+    char c;
+
+    printf("Escolha a peca: exemp.: (7 d)\n");
+    scanf(" %d", &peca->lin);
+    scanfC(&c);
+
+    // Limpa terminal
+    // (linux  || windowns)
+    system("clear || cls");
+
+    printf("\n");
+
+    // Dentro do tabuleiro
+    if((0 < peca->lin && peca->lin < 11) && (('a'-1) < c && c < 'k')){
+        peca->lin -= 1;
+        peca->col = c - 97; // 97 = 'a'
+        peca->tipo = mapa[peca->lin][peca->col];
+
+        if(peca->tipo == 0){
+            printf("Essa casa está vazia!\n");
+        }else{
+            // turno azul => impar | peca azul => par
+            //turno verm. => par | peca verm. => impar
+            if(*turno % 2 != peca->tipo % 2){ // se turno da peca
+                if(Acoes(mapa, peca) == 0){
+                    printf("Esta peca não pode ser movida!\n");
+                }else{
+                  return 1;
+                }
+            }else{
+                printf("Não é o turno desta cor!\n");
+            }
+        }
     }else{
-      printf("\nTurno das Pretas!");
+        printf("Posição invalida!\n");
     }
+
+    return 0;
 }
 
-//colocar no .h
-void limparBuffer(){ 
-    int ch;
-    while( (ch = fgetc(stdin)) != EOF && ch != '\n' ){} 
+int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
+    char c;
+
+    printf("Escolha destino da jogada: exemp.: (4 c)\n");
+    scanf(" %d", &nPos->lin);
+    scanfC(&c);
+
+    // Limpa terminal
+    // (linux  || windowns)
+    system("clear || cls");
+    printf("\n");
+    // Dentro do tabuleiro
+    if((0 < nPos->lin && nPos->lin < 11) && (('a'-1) < c && c < 'k')){
+        nPos->lin -= 1;
+        nPos->col = c - 97; // 97 = 'a'
+        nPos->tipo = mapa[nPos->lin][nPos->col];
+
+        if(nPos->tipo == 0){
+            //       Casa Ocupável
+            if(nPos->lin%2 != nPos->col%2){ 
+                int dir = nPos->lin - peca->lin;
+                int dist_l = abs(dir);
+                dir /= dist_l;
+                int dist_c = abs(peca->col - nPos->col);
+                int dist = (dist_l+dist_c)/2;
+
+                // Casa nas 2 diagonais  
+                if(dist_l == dist_c){
+                    if(peca->tipo < 3){
+                        if(dist < 3){
+                            int dir_certa = ((peca->tipo % 2)*2 - 1);
+
+                            if(dist == 1){
+                                if(dir == dir_certa){
+                                    return 1;
+                                }
+                            }else{
+                                pC->lin = (peca->lin + nPos->lin) / 2;
+                                pC->col = (peca->col + nPos->col) / 2;
+                                pC->tipo = mapa[pC->lin][pC->col];
+
+                                if(pC->tipo != 0 && peca->tipo%2 != pC->tipo%2){
+                                    return 2;
+                                }
+                            }
+                        }
+                    }else{
+                        //Dama jogadas
+                    }
+                }
+            }else{
+                printf("Local inválido!\n");
+                return 0;
+            }
+        }else{
+            printf("Casa já ocupada!\n");
+            return 0;
+        }
+    }else{
+        printf("Posição invalida!\n");
+        return 0;
+    }
+
+    printf("Jogada inválida!\n");
+    return 0;
 }
 
-int main() {
-  
+int main() {  
     setlocale(LC_ALL, "Portuguese");
-    pos origem, destino;
-    origem.x = -1;
-    char letraTab;
-    char escolha[50] = "Escolha a peca: ";
+    
+    int mapa[10][10];
+    Peca peca;
+    Peca nPos;
+    Peca pC;
+    int turno = 1;
+    char resp = 's';
+    bool partida;
+    bool comeu;
+    int entrar;
+    //turno%2 == 0 -> azul | turno%2 == 1 -> vermelha
 
-    struct jogador player1, player2;
-    player1.Color = Branco;
-    player2.Color = Preto;
+    // JOGO
+    while(resp == 's'){
+        partida = 1;
 
-    unsigned short int tab[10][10];
-    int turno = 1, pos1, pos2;
-    bool partida = true, podeMover = false;
+        // Partida
+        while(partida){
+            //Criar mapa
+            criarMapa(mapa);
+            entrar = 1;
+            
+            //Escolher peça
+            while(entrar == 1){
+                peca.lin = 0;
+                peca.col = 0;
 
-     Iniciar(tab);
+                //Print mapa
+                printMapa(mapa, &peca);
 
-   // while(partida){
+                entrar = !escolherPeca(mapa, &peca, &turno);        
+            }
 
-      Tela(tab,origem,turno);
+            entrar = 1;
 
-      while(podeMover == false){
-        printf("\n%s",escolha);
-        scanf(" %d %c", &origem.x,&letraTab);
-        origem.y = (int)letraTab;
-        origem.x--;origem.y-=97;
-        podeMover = Checar(tab, origem, turno, escolha);
-        
-        limparBuffer();
-      }
-      //voltar atras na escolha
-      // colocar esses 2 numa função
-      system("clear");
-      Tela(tab,origem,turno);
-      printf("\nEscolha o destino: ");
-      scanf(" %d %d", &destino.x,&destino.y);
-      origem.x = -1;
-      //turno++;
-      //system("clear");
-    //}
+            // Jogada        
+            while(entrar){
+                comeu = 0;
+
+                // Escolher jogada
+                while(entrar){
+                    printMapa(mapa, &peca);
+
+                    resp = escolherJogada(mapa, &peca , &nPos, &pC);
+                    comeu = resp == 2;
+                    entrar = resp == 0;
+                }
+
+                // Realizar Jogada
+
+                mapa[peca.lin][peca.col] = 0;
+                mapa[nPos.lin][nPos.col] = peca.tipo;
+                peca = nPos;
+                peca.tipo = mapa[peca.lin][peca.col];
+
+                if(comeu){
+                    mapa[pC.lin][pC.col] = 0;
+
+                    if(Acoes(mapa, &nPos) == 2){
+                        printMapa(mapa, &peca);
+                        printf("\nRealizar nova captura? (s/n) ");
+                        scanfC(&resp);
+                        
+                        if(resp == 's'){
+                            entrar = 1;
+                            //prox jogada tem que ser captura... fun()
+                        }
+
+                        // Limpa terminal
+                        // (linux  || windowns)
+                        system("clear || cls");                    
+                    }
+                }
+            }
+
+            //  Ver se tem mais...... mais oq?
+
+            //Troca turno
+            turno++;
+
+            //Win check
+            //  Varrer mapa
+            //  ou
+            //  Usar contador
+        }
+
+        printf("Jogar Novamente? (s/n) ");
+        scanfC(&resp);
+    }
+
   return 0;
 }
