@@ -236,9 +236,7 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
     return 0;
 }
 
-int main() {  
-    setlocale(LC_ALL, "Portuguese");
-    
+void Dama(){
     int mapa[10][10];
     Peca peca;
     Peca nPos;
@@ -327,6 +325,19 @@ int main() {
         printf("Jogar Novamente? (s/n) ");
         scanfC(&resp);
     }
+}
+
+int main() {  
+    setlocale(LC_ALL, "Portuguese"); 
+    char command = '1';
+    while(command!='0') {
+        printf("Menu:\n");
+        printf("1. Novo jogo\n");
+        printf("2. Highscore\n");
+        
+    }
+    
+    
 
   return 0;
 }
