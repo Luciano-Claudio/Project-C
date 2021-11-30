@@ -12,30 +12,28 @@ typedef struct{
 }Peca;
 
 void scanfC(char * carac){
-    *carac = getchar();
-    //scanf(" %c", carac);
+    scanf(" %c", carac);
     // Limpa Buffer
     while(getchar() != '\n');
-
-    //fflush(stdin); // no Windows 
-    //__fpurge(stdin); // no Linux
 }
 
 int criarMapa(int mapa[10][10]){
-    /*
     for(int i = 0; i < 10; i++){
         for(int j = 0; j < 10; j++){
             mapa[i][j] = 0;
         }
     }
-
-    mapa[3][6] = 1;
-    mapa[1][8] = 1;
-    mapa[3][8] = 1;
+    /*
     mapa[4][5] = 2;
+    mapa[3][6] = 1;
+    mapa[2][7] = 1;
+    */
+    mapa[4][5] = 2;
+    mapa[3][6] = 1;
+    mapa[3][8] = 1;
+    mapa[1][8] = 1;
 
     return 0;
-    */
 
     for(int l = 0; l < 10; l++){
         for(int c = 0; c < 10; c++){
@@ -112,8 +110,7 @@ int Acoes(int mapa[10][10], Peca * peca){
                 int casaDPS = mapa[lin_d+dir][col_d+(j*2)];
 
                 // Pode Comer
-                printf("D: %d, PS: %d, CDPS: %d\n", mapa[lin_d][col_d]%2, peca->tipo%2, casaDPS);
-                if(mapa[lin_d][col_d]%2 != peca->tipo%2 && casaDPS == 0){
+                if(mapa[lin_d][col_d] != 0 && mapa[lin_d][col_d]%2 != peca->tipo%2 && casaDPS == 0){
                     return 2;
                 }
 
@@ -137,11 +134,8 @@ int escolherPeca(int mapa[10][10], Peca * peca, int * turno){
     scanf(" %d", &peca->lin);
     scanfC(&c);
 
-    // Limpa terminal
-    // (linux  || windowns)
-    system("clear || cls");
-
-    printf("\n");
+    // Limpa terminal    
+    system("cls");
 
     // Dentro do tabuleiro
     if((0 < peca->lin && peca->lin < 11) && (('a'-1) < c && c < 'k')){
@@ -165,7 +159,7 @@ int escolherPeca(int mapa[10][10], Peca * peca, int * turno){
             }
         }
     }else{
-        printf("PosiÃÂ§ÃÂ£o invalida!\n");
+        printf("Posição invalida!\n");
     }
 
     return 0;
@@ -178,10 +172,9 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
     scanf(" %d", &nPos->lin);
     scanfC(&c);
 
-    // Limpa terminal
-    // (linux  || windowns)
-    system("clear || cls");
-    printf("\n");
+    // Limpa terminal    
+    system("cls");
+
     // Dentro do tabuleiro
     if((0 < nPos->lin && nPos->lin < 11) && (('a'-1) < c && c < 'k')){
         nPos->lin -= 1;
@@ -189,7 +182,7 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
         nPos->tipo = mapa[nPos->lin][nPos->col];
 
         if(nPos->tipo == 0){
-            //       Casa OcupÃÂ¡vel
+            //       Casa Ocupavel
             if(nPos->lin%2 != nPos->col%2){ 
                 int dir = nPos->lin - peca->lin;
                 int dist_l = abs(dir);
@@ -222,48 +215,44 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
                     }
                 }
             }else{
-                printf("Local invÃÂ¡lido!\n");
+                printf("\nLocal inválido!\n");
                 return 0;
             }
         }else{
-            printf("Casa jÃÂ¡ ocupada!\n");
+            printf("\nCasa está ocupada!\n");
             return 0;
         }
     }else{
-        printf("PosiÃÂ§ÃÂ£o invalida!\n");
+        printf("\nPosição inválida!\n");
         return 0;
     }
 
-    printf("Jogada invÃÂ¡lida!\n");
+    printf("\nJogada inválida!\n");
     return 0;
 }
 
 void Dama() {  
-    setlocale(LC_ALL, "Portuguese");
-    
-    int mapa[10][10];
-    Peca peca;
-    Peca nPos;
-    Peca pC;
-    int turno = 1;
+    Peca peca, nPos, pC;
+    int mapa[10][10], turno, pecas[2];
     char resp = 's';
-    bool partida;
-    bool comeu;
-    int entrar;
+    bool partida, comeu, entrar;
     //turno%2 == 0 -> azul | turno%2 == 1 -> vermelha
 
     // JOGO
     while(resp == 's'){
-        partida = 1;
+        //Criar mapa
+        criarMapa(mapa);
+        pecas[0] = pecas[1] = 20;
+        pecas[0] = 3;
+        pecas[1] = 1;
+        partida = turno = 1;
 
         // Partida
         while(partida){
-            //Criar mapa
-            criarMapa(mapa);
-            entrar = 1;
+            entrar = true;
             
-            //Escolher peÃÂ§a
-            while(entrar == 1){
+            //Escolher peça
+            while(entrar){
                 peca.lin = 0;
                 peca.col = 0;
 
@@ -273,45 +262,63 @@ void Dama() {
                 entrar = !escolherPeca(mapa, &peca, &turno);        
             }
 
-            entrar = 1;
+            entrar = true;
+            comeu = 0;
 
             // Jogada        
             while(entrar){
-                comeu = 0;
-
                 // Escolher jogada
                 while(entrar){
                     printMapa(mapa, &peca);
 
                     resp = escolherJogada(mapa, &peca , &nPos, &pC);
-                    comeu = resp == 2;
+                    
                     entrar = resp == 0;
+
+                    if(comeu && resp == 1){
+                        entrar = true;
+                        printf("Você deve capturar uma peca!\n");
+                    }else{
+                        // primeira captura obr
+                        if(Acoes(mapa, &peca) == 2 && resp == 1){
+                            printf("Você deve capturar uma peca!\n");
+                        }
+
+                        comeu = resp == 2;
+                    }
+                    
                 }
 
                 // Realizar Jogada
 
                 mapa[peca.lin][peca.col] = 0;
-                mapa[nPos.lin][nPos.col] = peca.tipo;
-                peca = nPos;
-                peca.tipo = mapa[peca.lin][peca.col];
 
+                peca.lin = nPos.lin;
+                peca.col = nPos.col;
+
+                // Fazer Dama 
+                if(peca.lin%9==0 && peca.tipo < 3 && peca.tipo%2 == peca.lin/9){
+                    peca.tipo = (peca.tipo+2); 
+                }
+                
+                mapa[nPos.lin][nPos.col] = peca.tipo;
+                
                 if(comeu){
                     mapa[pC.lin][pC.col] = 0;
 
-                    if(Acoes(mapa, &nPos) == 2){
+                    // pecas do outro time -1
+                    pecas[!(turno%2)]--;
+                    
+                    if(Acoes(mapa, &peca) == 2){ // problema
                         printMapa(mapa, &peca);
                         printf("\nRealizar nova captura? (s/n) ");
                         scanfC(&resp);
                         
-                        if(resp == 's'){
-                            entrar = 1;
-                            //prox jogada tem que ser captura... fun()
-                        }
-
-                        // Limpa terminal
-                        // (linux  || windowns)
-                        system("clear || cls");                    
+                        entrar = resp == 's';
                     }
+
+                    // Limpa terminal                    
+                    system("cls");                    
                 }
             }
 
@@ -321,12 +328,28 @@ void Dama() {
             turno++;
 
             //Win check
-            //  Varrer mapa
-            //  ou
-            //  Usar contador
+            partida = pecas[0] > 0 && pecas[1] > 0;
+            //peca travada tbm ........... 
         }
 
-        printf("Jogar Novamente? (s/n) ");
+        printf("\n\n\t\tAs peças ");
+        turno%2? printf("\033[31mVERMELHAS\033[0m"):
+                 printf("\033[34mAZUIS\033[0m");
+        printf(" venceram!\n");
+
+        /*
+        printf("As peças ");
+
+        if(turno%2){ // mudar se tiver peca travada
+            printf("vermelhas");
+        }else{
+            printf("azuis");
+        }
+
+        printf(" venceram!\n");
+        */
+
+        printf("\n\nJogar Novamente? (s/n) ");
         scanfC(&resp);
     }
 
