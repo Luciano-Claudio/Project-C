@@ -2,10 +2,12 @@
 #include <locale.h>
 #include <windows.h>
 #include <conio.h>
-//#include "Dama.h"
+#include "Dama.h"
+#include "Highscore.h"
 
-int menu(){
+int menu(int x){
     char m[3][20] = { " Exit", " Highscore", " Novo jogo"};
+    char n[3][20] = { " Voltar", " Jogo da Forca", " Dama"};
     char simbol[] = "->";
     int tam = 2;
     int seta = tam;
@@ -29,18 +31,28 @@ int menu(){
                 seta=tam;
             //seta < tam ? seta++ : seta=0;
         }
-        else if(ch == 13){
-            printf("\n\n \t\t\t    Até a próxima!\n\n");
+        else if(ch == 13)
             break;
-        }
-
-        printf("\n\n \t\t\t    Menu:\n\n");
-        for(i=tam;i>=0;i--){
-            seta==i ? printf("\t\t\t%s", simbol):printf("\t\t\t");
-            for(j=0;j<strlen(m[i]);j++){
-                printf("%c", m[i][j]);
+            
+        if (x == 0){
+            printf("\n\n \t\t\t    Menu:\n\n");
+            for(i=tam;i>=0;i--){
+                seta==i ? printf("\t\t\t%s", simbol):printf("\t\t\t");
+                for(j=0;j<strlen(m[i]);j++){
+                    printf("%c", m[i][j]);
+                }
+                printf("\n");
             }
-            printf("\n");
+        }
+        else{
+            printf("\n\n \t\t\t    Novo Jogo:\n\n");
+            for(i=tam;i>=0;i--){
+                seta==i ? printf("\t\t\t%s", simbol):printf("\t\t\t");
+                for(j=0;j<strlen(n[i]);j++){
+                    printf("%c", n[i][j]);
+                }
+                printf("\n");
+            }
         }
         ch = getch();
     }while(1);
@@ -62,19 +74,28 @@ int main() {
     }
     
     getch();
-    int command = 1;
-    while(command!=0) {
-        command = menu();
-        switch (command)
-        {
-            case 0: break;
+    int command;
+    do{
+        command = menu(0);
 
-            case 1: printf("vc escolheu o valor = %d", command); break;
-
-            case 2: printf("vc escolheu o valor = %d", command);  break;
-
-            default: printf("Escolha inválida!"); break;
+        if(command == 1){
+            // highscore
+            Highscore();
         }
-    }
+        else if(command == 2){
+            // novo jogo
+            int c = menu(1);
+            if(c == 1){
+                // jogo da forca
+            }
+            else if(c == 2){
+                // dama
+                Dama();
+            }
+        }
+        else 
+            printf("\n\n \t\t\t    Até a próxima!\n\n");
+
+    } while(command!=0);
   return 0;
 }
