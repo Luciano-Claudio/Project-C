@@ -1,5 +1,7 @@
 Ana Luisa,3,0
 Kildere Maravilha,2,0
 Magdiel Medeiros,1,0
-Luciano Claudio,2,0
 Wallace Bonfim,2,0
+Luciano Claudio,4,0
+Kildere Henrrique,1,0
+Kildere,1,0

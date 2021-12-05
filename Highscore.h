@@ -31,7 +31,7 @@ int AppendHighsocre(char name[20], int jogo){
                 strcat(texto,txt);
 
         }
-        jogo == 1? game_dama++ : game_forca++;
+        jogo == 1? game_forca++ : game_dama++;
 
         fclose(pont_arq);
     }

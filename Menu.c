@@ -5,6 +5,7 @@
 #include "Dama.h"
 #include "Highscore.h"
 
+
 int menu(int x){
     char m[3][20] = { " Exit", " Highscore", " Novo jogo"};
     char n[3][20] = { " Voltar", " Jogo da Forca", " Dama"};
@@ -59,6 +60,29 @@ int menu(int x){
     return seta;
 }
 
+void Iniciar(int c){
+    char player[2][20];
+    int a;
+    
+    system("cls"); // cls windows clear linux
+    printf("\n\t\tDigite o Nome do Player um: ");
+    scanf("%[ -Ý]", player[0]);
+    while(getchar() != '\n');
+    printf("\n\t\tDigite o Nome do Player dois: ");
+    scanf("%[ -Ý]", player[1]);
+    while(getchar() != '\n');
+
+    if(c == 1)
+        a = 0;
+    else if(c == 2)
+        a = Dama();
+
+    AppendHighsocre(player[a],c);
+    printf("\n\n \t Clique qualquer botão para voltar para o menu!\n\n");
+    getch();
+}
+
+
 int main() {  
     int i,j;
     char x;
@@ -85,13 +109,7 @@ int main() {
         else if(command == 2){
             // novo jogo
             int c = menu(1);
-            if(c == 1){
-                // jogo da forca
-            }
-            else if(c == 2){
-                // dama
-                Dama();
-            }
+            Iniciar(c);
         }
         else 
             printf("\n\n \t\t\t    Até a próxima!\n\n");

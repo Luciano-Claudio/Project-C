@@ -18,7 +18,6 @@ void scanfC(char * carac){
 }
 
 int criarMapa(int mapa[10][10]){
-    /*
     for(int i = 0; i < 10; i++){
         for(int j = 0; j < 10; j++){
             mapa[i][j] = 0;
@@ -33,6 +32,7 @@ int criarMapa(int mapa[10][10]){
     //mapa[1][8] = 1;
 
     return 0;
+    /*
     */
 
     for(int l = 0; l < 10; l++){
@@ -104,8 +104,8 @@ int Acoes(int mapa[10][10], Peca * peca){
 
     for(int dirV = -1; dirV < 2; dirV += 2){
         for(int dirH = -1; dirH < 2; dirH += 2){
-            //        (      direcao    ) * (inverte?)
-            int dirC = (peca->tipo % 2)*2 - 1;
+            //         (    direcao   ) * (inverte?)
+            int dirC = (peca->tipo % 2) *   2 - 1;
 
             int lin_d = peca->lin+dirV;
             int col_d = peca->col+dirH;
@@ -169,9 +169,7 @@ int escolherPeca(int mapa[10][10], Peca * peca, int * turno){
         if(peca->tipo == 0){
             printf("Essa casa está vazia!\n");
         }else{
-            // turno azul => impar | peca azul => par
-            //turno verm. => par | peca verm. => impar
-            if(*turno % 2 != peca->tipo % 2){ // se turno da peca
+            if(*turno % 2 != peca->tipo % 2){
                 if(Acoes(mapa, peca) == 0){
                     printf("Esta peca não pode ser movida!\n");
                 }else{
@@ -239,8 +237,8 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
                             }
                         }
                     }else{
-                        //Dama jogadas
-                        // se da peca selecionada ate a pos destino tiver apenas uma peca e ela for enimiga
+                        // Dama jogadas
+                        // Se da peca selecionada ate a pos destino tiver apenas uma peca e ela for enimiga
                         int lin_a = peca->lin+dirV;
                         int col_a = peca->col+dirH;
                         int casaDPS, peca_cam = 0;
@@ -264,7 +262,7 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
                         }
 
                         if(peca_cam < 2){ 
-                            return (peca_cam+1);
+                            return peca_cam+1;
                         }
                     }
                 }
@@ -285,116 +283,128 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
     return 0;
 }
 
-void Dama() {  
-    Peca peca, nPos, pC;
-    int mapa[10][10], turno, pecas[2];
-    char resp = 's';
-    bool partida, comeu, entrar;
-    //turno%2 == 0 -> azul | turno%2 == 1 -> vermelha
-
-    // JOGO
-    while(resp == 's'){
-        //Criar mapa
-        criarMapa(mapa);
-        pecas[0] = pecas[1] = 20;
-        //pecas[0] = 1;
-        //pecas[1] = 1;
-        partida = turno = 1;
-
-        // Partida
-        while(partida){
-            entrar = true;
+bool varrerMapa(int mapa[10][10], int * turno){
+    Peca peca;
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 10; j++){
+            peca.lin = i;
+            peca.col = j;
+            peca.tipo = mapa[i][j];
             
-            //Escolher peça
-            while(entrar){
-                peca.lin = 0;
-                peca.col = 0;
-
-                //Print mapa
-                printMapa(mapa, &peca, &turno);
-
-                entrar = !escolherPeca(mapa, &peca, &turno);        
-            }
-
-            entrar = true;
-            comeu = 0;
-
-            // Jogada        
-            while(entrar){
-                // Escolher jogada
-                while(entrar){
-                    printMapa(mapa, &peca, &turno);
-
-                    resp = escolherJogada(mapa, &peca , &nPos, &pC);
-                    
-                    entrar = resp == 0;
-                    comeu = resp == 2;
-
-                    if((comeu || Acoes(mapa, &peca) == 2) && resp == 1){
-                        entrar = true;
-                        printf("Você deve capturar uma peca!\n");
-                    }
-                }
-
-                // Realizar Jogada
-
-                mapa[peca.lin][peca.col] = 0;
-
-                peca.lin = nPos.lin;
-                peca.col = nPos.col;
-
-                // Fazer Dama 
-                if(peca.lin%9==0 && peca.tipo < 3 && peca.tipo%2 == peca.lin/9){
-                    peca.tipo = (peca.tipo+2); 
-                }
-                
-                mapa[peca.lin][peca.col] = peca.tipo;
-                
-                if(comeu){
-                    mapa[pC.lin][pC.col] = 0;
-
-                    // pecas do outro time -1
-                    pecas[!(turno%2)]--;
-                    
-                    entrar = Acoes(mapa, &peca) == 2;
-
-                    // Limpa terminal                    
-                    //system("cls");                    
+            if(peca.tipo != 0 && peca.tipo%2 != *turno%2){
+                if(Acoes(mapa, &peca) == 2){
+                    return true;
                 }
             }
-
-            //  Ver se tem mais...... mais oq?
-
-            //Troca turno
-            turno++;
-
-            //Win check
-            partida = pecas[0] > 0 && pecas[1] > 0;
-            //peca travada tbm ........... 
         }
-
-        printf("\n\n\t\tAs peças ");
-        turno%2? printf("\033[31mVERMELHAS\033[0m"):
-                 printf("\033[34mAZUIS\033[0m");
-        printf(" venceram!\n");
-
-        /*
-        printf("As peças ");
-
-        if(turno%2){ // mudar se tiver peca travada
-            printf("vermelhas");
-        }else{
-            printf("azuis");
-        }
-
-        printf(" venceram!\n");
-        */
-
-        // MEXER NO TEXTO.TXT
-
-        printf("\n\nJogar Novamente? (s/n) ");
-        scanfC(&resp);
     }
 
-    //return 0;
+    return false;
+}
+
+int Dama() {  
+    Peca peca, nPos, pC;
+    int mapa[10][10], turno, pecas[2], actions;
+    char resp = 's';
+    bool partida, comeu, entrar;
+
+    //Criar mapa
+    criarMapa(mapa);
+    pecas[0] = pecas[1] = 20;
+    partida = turno = 1;
+    pecas[0] = 1;
+    pecas[1] = 1;
+
+    // Partida
+    while(partida){
+        entrar = true;
+        actions;
+
+        // Deve capturar
+        bool dvCap = varrerMapa(mapa, &turno);
+        
+        // Escolher peça
+        while(entrar){
+            peca.lin = 0;
+            peca.col = 0;
+
+            // Print mapa
+            printMapa(mapa, &peca, &turno);
+
+            entrar = !escolherPeca(mapa, &peca, &turno); 
+            actions = Acoes(mapa, &peca);
+
+            if(dvCap && actions != 2){
+                printf("Você deve capturar uma peça!\n");
+                entrar = true;
+            }        
+        }
+
+        entrar = true;
+        comeu = 0;
+
+        // Jogada        
+        while(entrar){
+            // Escolher jogada
+            while(entrar){
+                printMapa(mapa, &peca, &turno);
+
+                resp = escolherJogada(mapa, &peca , &nPos, &pC);
+                
+                entrar = resp == 0;
+                comeu = resp == 2;
+
+                if((comeu || actions == 2) && resp == 1){
+                    entrar = true;
+                    printf("Você deve capturar uma peca!\n");
+                }
+            }
+
+            // Realizar Jogada
+
+            mapa[peca.lin][peca.col] = 0;
+
+            peca.lin = nPos.lin;
+            peca.col = nPos.col;
+
+            // Fazer Dama 
+            if(peca.lin%9==0 && peca.tipo < 3 && peca.tipo%2 == peca.lin/9){
+                peca.tipo = (peca.tipo+2); 
+            }
+            
+            mapa[peca.lin][peca.col] = peca.tipo;
+
+            if(comeu){
+                mapa[pC.lin][pC.col] = 0;
+                pecas[!(turno%2)]--;
+                entrar = Acoes(mapa, &peca) == 2;                   
+            }
+        }
+
+        //Prox turno
+        turno++;
+
+        // PECA travada tbm ........... 
+        // Win check
+        partida = pecas[0] > 0 && pecas[1] > 0;
+    }
+
+    printf("\n\n\t\tAs peças ");
+    turno%2? printf("\033[31mVERMELHAS\033[0m"):
+                printf("\033[34mAZUIS\033[0m");
+    printf(" venceram!\n");
+
+    /*
+    printf("As peças ");
+
+    if(turno%2){ // mudar se tiver peca travada
+        printf("vermelhas");
+    }else{
+        printf("azuis");
+    }
+
+    printf(" venceram!\n");
+    */
+
+    return turno%2;
 }
