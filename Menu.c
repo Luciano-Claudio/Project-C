@@ -3,14 +3,16 @@
 #include <windows.h>
 #include <conio.h>
 #include "Dama.h"
+#include "Velha.h"
+#include "Forca.h"
 #include "Highscore.h"
 
 
 int menu(int x){
     char m[3][20] = { " Exit", " Highscore", " Novo jogo"};
-    char n[3][20] = { " Voltar", " Jogo da Forca", " Dama"};
+    char n[4][20] = { " Voltar", " Jogo da Forca", " Jogo da Velha", " Dama"};
     char simbol[] = "->";
-    int tam = 2;
+    int tam = x+2;
     int seta = tam;
     char ch = 1;
     int i,j;
@@ -63,21 +65,26 @@ int menu(int x){
 void Iniciar(int c){
     char player[2][20];
     int a;
-    
-    system("cls"); // cls windows clear linux
-    printf("\n\t\tDigite o Nome do Player um: ");
-    scanf("%[ -Ý]", player[0]);
-    while(getchar() != '\n');
-    printf("\n\t\tDigite o Nome do Player dois: ");
-    scanf("%[ -Ý]", player[1]);
-    while(getchar() != '\n');
-
     if(c == 1)
-        a = 0;
-    else if(c == 2)
-        a = Dama();
+        Forca();
+    else{
+        system("cls"); // cls windows clear linux
+        printf("\n\t\tDigite o Nome do Player um: ");
+        scanf("%[ -Ý]", player[0]);
+        while(getchar() != '\n');
+        printf("\n\t\tDigite o Nome do Player dois: ");
+        scanf("%[ -Ý]", player[1]);
+        while(getchar() != '\n');
 
-    AppendHighsocre(player[a],c);
+        if(c == 2)
+            a = Velha();
+        else if(c == 3)
+            a = Dama();
+        if(a >= 0){
+            printf("Parabéns %s",player[a]);
+            AppendHighsocre(player[a],c);
+        }
+    }
     printf("\n\n \t Clique qualquer botão para voltar para o menu!\n\n");
     getch();
 }
@@ -102,14 +109,14 @@ int main() {
     do{
         command = menu(0);
 
-        if(command == 1){
-            // highscore
+        if(command == 1)
             Highscore();
-        }
+
         else if(command == 2){
             // novo jogo
             int c = menu(1);
-            Iniciar(c);
+            if(c!=0)
+                Iniciar(c);
         }
         else 
             printf("\n\n \t\t\t    Até a próxima!\n\n");

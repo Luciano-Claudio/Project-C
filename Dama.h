@@ -18,21 +18,17 @@ void scanfC(char * carac){
 }
 
 int criarMapa(int mapa[10][10]){
-    for(int i = 0; i < 10; i++){
+    /*for(int i = 0; i < 10; i++){
         for(int j = 0; j < 10; j++){
             mapa[i][j] = 0;
         }
     }
-    mapa[4][5] = 2;
-    mapa[3][6] = 1;
-    mapa[2][7] = 1;
-    mapa[4][5] = 4;
-    mapa[6][7] = 1;
-    //mapa[3][8] = 1;
-    //mapa[1][8] = 1;
+    mapa[2][7] = 2;
+    mapa[1][8] = 2;
+    mapa[0][9] = 1;
 
     return 0;
-    /*
+    
     */
 
     for(int l = 0; l < 10; l++){
@@ -120,27 +116,29 @@ int Acoes(int mapa[10][10], Peca * peca){
                         resp = 1;
                 }
 
-                // Pode Comer
-                //Se Dama
-                if(peca->tipo > 2){
-                    //DamaMov();
+                // Posicao que Pode Comer
+                if(lin_d > 0 && lin_d < 9 && col_d > 0 && col_d < 9){
+                    //Se Dama
+                    if(peca->tipo > 2){
+                        //DamaMov();
 
-                    while(lin_d > 0 && lin_d < 9 && col_d > 0 && col_d < 9){
-                        casaDPS = mapa[lin_d+dirV][col_d+dirH];
+                        while(lin_d > 0 && lin_d < 9 && col_d > 0 && col_d < 9){
+                            casaDPS = mapa[lin_d+dirV][col_d+dirH];
 
-                        if(mapa[lin_d][col_d] != 0){
-                            if(mapa[lin_d][col_d]%2 == peca->tipo%2){
-                                break;
-                            }else if(casaDPS == 0){
-                                return 2;
+                            if(mapa[lin_d][col_d] != 0){
+                                if(mapa[lin_d][col_d]%2 == peca->tipo%2){
+                                    break;
+                                }else if(casaDPS == 0){
+                                    return 2;
+                                }
                             }
-                        }
 
-                        lin_d += dirV;
-                        col_d += dirH;
+                            lin_d += dirV;
+                            col_d += dirH;
+                        }
+                    }else if(mapa[lin_d][col_d] != 0 && mapa[lin_d][col_d]%2 != peca->tipo%2 && casaDPS == 0){
+                        return 2;
                     }
-                }else if(mapa[lin_d][col_d] != 0 && mapa[lin_d][col_d]%2 != peca->tipo%2 && casaDPS == 0){
-                    return 2;
                 }
             }
         }
@@ -302,6 +300,30 @@ bool varrerMapa(int mapa[10][10], int * turno){
     return false;
 }
 
+int pecasTravadas(int mapa[10][10], int * turno, int pecas[2]){
+    Peca peca;
+    int cont = 0;
+    for(int i = 0; i < 10; i++){
+        for(int j = 0; j < 10; j++){
+            peca.lin = i;
+            peca.col = j;
+            peca.tipo = mapa[i][j];
+            
+            if(peca.tipo != 0 && peca.tipo%2 == *turno%2){
+                if(Acoes(mapa, &peca) == 0){
+                    cont++;
+                }
+            }
+            
+            if(cont == pecas[1-*turno]){
+                return true;
+            }
+        }
+    }
+
+    return false;//cont == pecas[1-*turno];
+}
+
 int Dama() {  
     Peca peca, nPos, pC;
     int mapa[10][10], turno, pecas[2], actions;
@@ -381,30 +403,24 @@ int Dama() {
             }
         }
 
-        //Prox turno
-        turno++;
-
-        // PECA travada tbm ........... 
         // Win check
         partida = pecas[0] > 0 && pecas[1] > 0;
+
+        // Checa se esta bloqueado
+        if(partida){
+            if(pecasTravadas(mapa, &turno, pecas)){
+                partida = false;
+            }
+        }
+
+        //Prox turno
+        turno++;
     }
 
     printf("\n\n\t\tAs peças ");
     turno%2? printf("\033[31mVERMELHAS\033[0m"):
                 printf("\033[34mAZUIS\033[0m");
     printf(" venceram!\n");
-
-    /*
-    printf("As peças ");
-
-    if(turno%2){ // mudar se tiver peca travada
-        printf("vermelhas");
-    }else{
-        printf("azuis");
-    }
-
-    printf(" venceram!\n");
-    */
 
     return turno%2;
 }

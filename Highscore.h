@@ -6,7 +6,7 @@
 int AppendHighsocre(char name[20], int jogo){
 
     FILE *pont_arq;
-    int game_dama = 0, game_forca = 0;
+    int game_dama = 0, game_velha = 0;
     char str[50];
     char texto[255];
     strcpy(texto,"");
@@ -25,13 +25,13 @@ int AppendHighsocre(char name[20], int jogo){
                 t = strtok (NULL, ",\n");
                 game_dama = atoi(t);
                 t = strtok (NULL, ",\n");
-                game_forca = atoi(t);
+                game_velha = atoi(t);
             }
             else
                 strcat(texto,txt);
 
         }
-        jogo == 1? game_forca++ : game_dama++;
+        jogo == 2? game_velha++ : game_dama++;
 
         fclose(pont_arq);
     }
@@ -43,7 +43,7 @@ int AppendHighsocre(char name[20], int jogo){
     itoa(game_dama, snum, 10);
     strcat(str,snum);
     strcat(str,",");
-    itoa(game_forca, snum, 10);
+    itoa(game_velha, snum, 10);
     strcat(str,snum);
     strcat(str,"\n");
 
@@ -77,7 +77,7 @@ int Highscore(){
     }
     
     system("cls"); // cls windows clear linux
-    printf("\t\tVencedores\t|\tDama\t|  Jogo da Forca\n\n");
+    printf("\t\tVencedores\t|\tDama\t|  Jogo da Velha\n\n");
     while(fgets(text, 50, pont_arq) != NULL){
         pch = strtok (text,",");
 
