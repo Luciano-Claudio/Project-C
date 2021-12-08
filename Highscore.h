@@ -35,7 +35,7 @@ int AppendHighsocre(char name[20], int jogo){
 
         fclose(pont_arq);
     }
-    //printf("%d",strlen(texto));
+
     char snum[5];
     
     strcpy(str,name);
@@ -50,13 +50,12 @@ int AppendHighsocre(char name[20], int jogo){
     pont_arq = fopen("arquivo.txt", "w");
 
     if (pont_arq == NULL){
-        printf("ERRO! O arquivo nÃ£o foi aberto!\n");
+        printf("ERRO! O arquivo não foi aberto!\n");
         return 1;
     }
     
     strcat(texto,str);
 
-   // printf("%s", texto);
     fprintf(pont_arq, "%s", texto);
   
     fclose(pont_arq);
@@ -72,8 +71,9 @@ int Highscore(){
     char *pch;
 
     if (pont_arq == NULL){
-        printf("ERRO! O arquivo nÃ£o foi aberto!\n");
-        return 1;
+        pont_arq = fopen("arquivo.txt", "w");
+        fclose(pont_arq);
+        pont_arq = fopen("arquivo.txt", "r");
     }
     
     system("cls"); // cls windows clear linux
@@ -88,7 +88,7 @@ int Highscore(){
 
         printf("\n");
     }
-    printf("\n\n \t Clique qualquer botão para voltar para o menu!\n\n");
+    printf("\n\n \t Clique qualquer bot�o para voltar para o menu!\n\n");
     fclose(pont_arq);
     getch();
     return 0;

@@ -16,11 +16,12 @@ void tela(int jogo[3][3], int x, int y){
     int i=1;
     printf("\n");
     for(l = 0; l < 3; l++){
+        printf("\t\t");
         for(c = 0; c < 3; c++){
             if(l == x && c == y)
                 printf("\033[47m");
             if(jogo[l][c] == 0)
-                printf(" %d ",i);
+                printf("   ");
             else if(jogo[l][c] == 1)
                 printf("\033[34m O ");
             else
@@ -29,11 +30,12 @@ void tela(int jogo[3][3], int x, int y){
             printf("\033[0m");
             if(c<2)
                 printf("|");
-            i++;
         }
-        printf("   \n");
+
+        printf("\t\t %d  %d  %d\n", i,i+1,i+2);
+        i+=3;
         if(l<2)
-            printf("___ ___ ___\n");
+            printf("\t\t--- --- ---");
         printf("\n");
     }
 }
@@ -41,18 +43,18 @@ void tela(int jogo[3][3], int x, int y){
 
 int checarVitoria(int jogo[3][3]){
     int l,c,soma;
-    //checar se houve vit√≥ria por linha
+    //checar se houve vitÛria por linha
     for(l=0;l<3;l++){
         soma = 0;
         for (c=0;c<3;c++)
             soma += jogo[l][c];
-
+    
         if(soma == 3)
             return 0;
-        if(soma == -3)
+        else if(soma == -3)
             return 1;
     }
-    //checar se houve vit√≥ria por coluna
+    //checar se houve vitÛria por coluna
     for(c=0 ; c<3 ; c++){
         soma = 0;
         for(l=0 ; l<3 ; l++)
@@ -60,34 +62,34 @@ int checarVitoria(int jogo[3][3]){
 
         if(soma==3)
             return 0;
-        if(soma==-3)
+        else if(soma==-3)
             return 1;
     }
     
-    //checar se houve vit√≥ria pelas diagonais
+    //checar se houve vitÛria pelas diagonais
     soma = 0;
     for(l=0 ; l<3 ; l++)
         soma += jogo[l][l];
     if(soma==3)
         return 0;
-    if(soma==-3)
+    else if(soma==-3)
         return 1;
 
     soma = jogo[0][2]+jogo[1][1]+jogo[2][0];
     if(soma==3)
         return 0;
-    if(soma==-3)
+    else if(soma==-3)
         return 1;
 
     return -1;
 }
-int casaLivre(int jogo[3][3], int vet[2]){
-    int l,c;
-    for(l=0;l<3;l++){
-            for(c=0;c<3;c++){
-                if(jogo[l][c] == 0){
-                    vet[0] = l;
-                    vet[1] = c;
+int casaLivre(int jogo[3][3], int *l, int *c){
+    int i,j;
+    for(i=0;i<3;i++){
+            for(j=0;j<3;j++){
+                if(jogo[i][j] == 0){
+                    *l=i;
+                    *c=j;
                     return 1;
                 }
             }
@@ -97,11 +99,9 @@ int casaLivre(int jogo[3][3], int vet[2]){
 
 int jogada(int jogo[3][3], int *jogador){
     char ch;
-    int vet[2];
     int l,c;
 
-    casaLivre(jogo, vet);
-    l = vet[0], c = vet[1];
+    casaLivre(jogo, &l,&c);
 
     while(1){
         system("cls"); // cls windows clear linux
@@ -109,52 +109,14 @@ int jogada(int jogo[3][3], int *jogador){
         tela(jogo,l, c);
 
         ch = getch();
-        
-        if(ch == 49 && jogo[0][0] == 0){// tecla 1
-            jogo[l][c]=0;
-            l=0;c=0;
-        }  
-            
-        else if(ch == 50 && jogo[0][1] == 0){// tecla 2
-            jogo[l][c]=0;
-            l=0;c=1;
-        }  
-            
-        else if(ch == 51 && jogo[0][2] == 0){// tecla 3
-            jogo[l][c]=0;
-            l=0;c=2;
-        }  
-            
-        else if(ch == 52 && jogo[1][0] == 0){// tecla 4
-            jogo[l][c]=0;
-            l=1;c=0;
-        }  
-            
-        else if(ch == 53 && jogo[1][1] == 0){// tecla 5
-            jogo[l][c]=0;
-            l=1;c=1;
-        }  
-            
-        else if(ch == 54 && jogo[1][2] == 0){// tecla 6
-            jogo[l][c]=0;
-            l=1;c=2;
-        }  
-            
-        else if(ch == 55 && jogo[2][0] == 0){ // tecla 7
-            jogo[l][c]=0;
-            l=2;c=0;
-        } 
-            
-        else if(ch == 56 && jogo[2][1] == 0){// tecla 8
-            jogo[l][c]=0;
-            l=2;c=1;
-        }  
-            
-        else if(ch == 57 && jogo[2][2] == 0){// tecla 
-            jogo[l][c]=0;
-            l=2;c=2;
-        }  
-            
+        if(ch>=49 && 57>=ch){
+            ch-=49;
+            if(jogo[ch/3][ch%3]==0){
+                jogo[l][c] = 0;
+                l=ch/3;
+                c=ch%3;
+            }
+        }
         else if(ch == 13)
             break;
             
@@ -164,33 +126,31 @@ int jogada(int jogo[3][3], int *jogador){
 
 int Velha(){
 
-int l, c, linha, coluna, jogador, ganhou, jogadas, opcao, turno;
-int jogo[3][3];
-criarTab(jogo);
+    int l, c, linha, coluna, jogador, ganhou, jogadas, opcao, turno;
+    int jogo[3][3];
+    criarTab(jogo);
 
-jogadas = 0;
-jogador = 1;
+    jogadas = 0;
+    jogador = 1;
 
 
-do{ // repete at√© algu√©m ganhar ou jogadas < 9
-    // imprime tabuleiro do jogo
+    do{ // repete atÈ alguÈm ganhar ou jogadas < 9
+
+        jogada(jogo,&jogador);
+
+        jogadas++;
+        ganhou = checarVitoria(jogo);
+
+    }while(ganhou == -1 && jogadas < 9);
+
+    // imprimir jogo
+    system("cls"); // cls windows clear linux
     tela(jogo, 4, 4);
 
-    jogada(jogo,&jogador);
+    if(ganhou == -1)
+        printf("\nDeu VELHA! x_x\n");
 
-    jogadas++;
-    ganhou = checarVitoria(jogo);
-
-}while(ganhou == -1 && jogadas < 9);
-
-// imprimir jogo
-system("cls"); // cls windows clear linux
-tela(jogo, 4, 4);
-
-if(ganhou == -1)
-    printf("\nDeu VELHA! x_x\n");
-
-return ganhou;
+    return ganhou;
 
 }
     

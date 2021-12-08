@@ -1,3 +1,6 @@
 Luciano Claudio,1,1
-Kildere Henrrique,1,1
 Ana Luisa,0,2
+Kildere Henrrique,1,2
+Magdiel Medeiros,2,0
+Douglas,1,0
+Wallace,0,1

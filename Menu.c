@@ -25,14 +25,12 @@ int menu(int x){
                 seta++;
             else
                 seta=0;
-            //seta > 0 ? seta-- : seta=tam;
         }
         else if(ch == 80){
             if(seta>0)
                 seta--;
             else
                 seta=tam;
-            //seta < tam ? seta++ : seta=0;
         }
         else if(ch == 13)
             break;
@@ -70,22 +68,23 @@ void Iniciar(int c){
     else{
         system("cls"); // cls windows clear linux
         printf("\n\t\tDigite o Nome do Player um: ");
-        scanf("%[ -√ù]", player[0]);
+        scanf("%[ -›]", player[0]);
         while(getchar() != '\n');
         printf("\n\t\tDigite o Nome do Player dois: ");
-        scanf("%[ -√ù]", player[1]);
+        scanf("%[ -›]", player[1]);
         while(getchar() != '\n');
 
+        system("cls"); // cls windows clear linux
         if(c == 2)
             a = Velha();
         else if(c == 3)
             a = Dama();
         if(a >= 0){
-            printf("Parab√©ns %s",player[a]);
+            printf("ParabÈns %s",player[a]);
             AppendHighsocre(player[a],c);
         }
     }
-    printf("\n\n \t Clique qualquer bot√£o para voltar para o menu!\n\n");
+    printf("\n\n \t Clique qualquer bot„o para voltar para o menu!\n\n");
     getch();
 }
 
@@ -95,7 +94,7 @@ int main() {
     char x;
     setlocale(LC_ALL, "Portuguese"); 
     system("cls"); // cls windows clear linux
-    char text[10][255]=    {"\n\n \t\t    Trabalho de LDA e TDA", "\n\n \t\t\t Criado por:", "\n \t\t\t  Ana Luisa", "\n \t\t\t   Kildere", "\n \t\t\t   Luciano", "\n \t\t\t   Magdiel", "\n\n \t Clique qualquer bot√£o para ir para o menu!\n\n",};
+    char text[10][255] = {"\n\n \t\t    Trabalho de LDA e TDA", "\n\n \t\t\t Criado por:", "\n \t\t\t  Ana Luisa", "\n \t\t\t   Kildere", "\n \t\t\t   Luciano", "\n \t\t\t   Magdiel", "\n\n \t Clique qualquer bot„o para ir para o menu!\n\n",};
     printf("\n\n");
     for(i=0;i<7;i++){
         for(j = 0; j<strlen(text[i]); j++){
@@ -119,7 +118,7 @@ int main() {
                 Iniciar(c);
         }
         else 
-            printf("\n\n \t\t\t    At√© a pr√≥xima!\n\n");
+            printf("\n\n \t\t\t    AtÈ a prÛxima!\n\n");
 
     } while(command!=0);
   return 0;

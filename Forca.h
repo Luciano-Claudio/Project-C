@@ -35,14 +35,14 @@ void Forca(){
 	
 	
 	printf("\n\n\tInforme a palavra secreta: ");
-	scanf("%s", &palavra_secr); // SÃ³ capitura palavras sem espaÃ§o.
+	scanf("%s", &palavra_secr); // Só capitura palavras sem espaço.
 	cleanBuffer();
 	printf("\n\tA palavra informada foi %s.\n\n\t", palavra_secr);
 	
-	/* Agora Ã© necessÃ¡rio fazer a palavra secreta sumir da tela.
-	No windows usar system("pause") e system("pause") e no Linux usar getch() e system(clear). Mas considerando tambÃ©m as IDEs web
-	para funcionar em todos os casos, pode-se imprimir vÃ¡rias linhas em branco na tela
-	atÃ© a palavra sair da visualizaÃ§Ã£o.*/
+	/* Agora é necessário fazer a palavra secreta sumir da tela.
+	No windows usar system("pause") e system("pause") e no Linux usar getch() e system(clear). Mas considerando também as IDEs web
+	para funcionar em todos os casos, pode-se imprimir várias linhas em branco na tela
+	até a palavra sair da visualização.*/
 
 	system("cls");
 
@@ -57,7 +57,7 @@ void Forca(){
 		system("cls");
 		printGame(quant_erros);
 		
-		printf("\n\n\tA palavra Ã©: %s.", espacos);
+		printf("\n\n\tA palavra é: %s.", espacos);
 		printf("\n\n\tDigite uma letra: ");
 		scanf(" %c",&letra);
 		cleanBuffer();
@@ -76,15 +76,15 @@ void Forca(){
 		}
 
 		if(strcmp(espacos, palavra_secr) == 0){
-			printf("\n\n\tVocÃª advinhou! A palavra secreta Ã©...    %s", &espacos);
-			printf("\n\n\tVocÃª ganhou. Uhu!!!!!!!\n\n");
+			printf("\n\n\tVocê advinhou! A palavra secreta é...    %s", &espacos);
+			printf("\n\n\tVocê ganhou. Uhu!!!!!!!\n\n");
 			break;
 		}
 
 		if(quant_erros == 7){
 			system("cls");
 			printGame(quant_erros);
-			printf("\n\n\tTcururu... VocÃª nÃ£o advinhou! A palavra secreta era...    %s\n\n", &palavra_secr);
+			printf("\n\n\tTururu... Você não advinhou! A palavra secreta era...    %s\n\n", &palavra_secr);
 			break;
 		}
 	}

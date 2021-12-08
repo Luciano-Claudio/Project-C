@@ -8,7 +8,6 @@ typedef struct{
     int lin;
     int col;
     int tipo;
-    int movimento[1][1];
 }Peca;
 
 void scanfC(char * carac){
@@ -18,18 +17,6 @@ void scanfC(char * carac){
 }
 
 int criarMapa(int mapa[10][10]){
-    /*for(int i = 0; i < 10; i++){
-        for(int j = 0; j < 10; j++){
-            mapa[i][j] = 0;
-        }
-    }
-    mapa[2][7] = 2;
-    mapa[1][8] = 2;
-    mapa[0][9] = 1;
-
-    return 0;
-    
-    */
 
     for(int l = 0; l < 10; l++){
         for(int c = 0; c < 10; c++){
@@ -75,6 +62,7 @@ void printMapa(int mapa[10][10], Peca * peca_s, int * turno){
               }else{
                   printf("\033[34m");
               }
+              
               if(peca < 3){
                   printf("P");
               }else{
@@ -101,6 +89,7 @@ int Acoes(int mapa[10][10], Peca * peca){
     for(int dirV = -1; dirV < 2; dirV += 2){
         for(int dirH = -1; dirH < 2; dirH += 2){
             //         (    direcao   ) * (inverte?)
+            // Direcao Correta
             int dirC = (peca->tipo % 2) *   2 - 1;
 
             int lin_d = peca->lin+dirV;
@@ -165,20 +154,20 @@ int escolherPeca(int mapa[10][10], Peca * peca, int * turno){
         peca->tipo = mapa[peca->lin][peca->col];
 
         if(peca->tipo == 0){
-            printf("Essa casa estÃ¡ vazia!\n");
+            printf("Essa casa está vazia!\n");
         }else{
             if(*turno % 2 != peca->tipo % 2){
                 if(Acoes(mapa, peca) == 0){
-                    printf("Esta peca nÃ£o pode ser movida!\n");
+                    printf("Esta peca não pode ser movida!\n");
                 }else{
                   return 1;
                 }
             }else{
-                printf("NÃ£o Ã© o turno desta cor!\n");
+                printf("Não é o turno desta cor!\n");
             }
         }
     }else{
-        printf("PosiÃ§Ã£o invÃ¡lida!\n");
+        printf("Posição inválida!\n");
     }
 
     return 0;
@@ -239,7 +228,7 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
                         // Se da peca selecionada ate a pos destino tiver apenas uma peca e ela for enimiga
                         int lin_a = peca->lin+dirV;
                         int col_a = peca->col+dirH;
-                        int casaDPS, peca_cam = 0;
+                        int casaDPS, peca_cam = 0; // pecas no caminho
     
                         while((lin_a != nPos->lin+dirV) || (peca_cam > 1)){
                             casaDPS = mapa[lin_a+dirV][col_a+dirH];
@@ -265,19 +254,19 @@ int escolherJogada(int mapa[10][10], Peca * peca, Peca * nPos, Peca * pC){
                     }
                 }
             }else{
-                printf("\nLocal invÃ¡lido!\n");
+                printf("\nLocal inválido!\n");
                 return 0;
             }
         }else{
-            printf("\nCasa estÃ¡ ocupada!\n");
+            printf("\nCasa está ocupada!\n");
             return 0;
         }
     }else{
-        printf("\nPosiÃ§Ã£o invÃ¡lida!\n");
+        printf("\nPosição inválida!\n");
         return 0;
     }
 
-    printf("\nJogada invÃ¡lida!\n");
+    printf("\nJogada inválida!\n");
     return 0;
 }
 
@@ -315,7 +304,8 @@ int pecasTravadas(int mapa[10][10], int * turno, int pecas[2]){
                 }
             }
             
-            if(cont == pecas[1-*turno]){
+            if(cont == pecas[!(*turno%2)]){
+                printf("cont: %d, p-1: %d, p-2: %d\n", cont, pecas[0], pecas[1]);
                 return true;
             }
         }
@@ -326,38 +316,34 @@ int pecasTravadas(int mapa[10][10], int * turno, int pecas[2]){
 
 int Dama() {  
     Peca peca, nPos, pC;
-    int mapa[10][10], turno, pecas[2], actions;
-    char resp = 's';
+    int mapa[10][10], turno, pecas[2], actions, resp;
     bool partida, comeu, entrar;
 
     //Criar mapa
     criarMapa(mapa);
     pecas[0] = pecas[1] = 20;
     partida = turno = 1;
-    pecas[0] = 1;
-    pecas[1] = 1;
 
     // Partida
     while(partida){
         entrar = true;
-        actions;
 
         // Deve capturar
         bool dvCap = varrerMapa(mapa, &turno);
         
-        // Escolher peÃ§a
+        // Escolher peça
         while(entrar){
             peca.lin = 0;
             peca.col = 0;
-
+            
             // Print mapa
             printMapa(mapa, &peca, &turno);
-
+            
             entrar = !escolherPeca(mapa, &peca, &turno); 
             actions = Acoes(mapa, &peca);
 
             if(dvCap && actions != 2){
-                printf("VocÃª deve capturar uma peÃ§a!\n");
+                printf("Você deve capturar uma peça!\n");
                 entrar = true;
             }        
         }
@@ -377,8 +363,8 @@ int Dama() {
                 comeu = resp == 2;
 
                 if((comeu || actions == 2) && resp == 1){
+                    printf("Você deve capturar uma peca!\n");
                     entrar = true;
-                    printf("VocÃª deve capturar uma peca!\n");
                 }
             }
 
@@ -417,7 +403,7 @@ int Dama() {
         turno++;
     }
 
-    printf("\n\n\t\tAs peÃ§as ");
+    printf("\n\n\t\tAs peças ");
     turno%2? printf("\033[31mVERMELHAS\033[0m"):
                 printf("\033[34mAZUIS\033[0m");
     printf(" venceram!\n");
