@@ -81,7 +81,7 @@ void Iniciar(int c){
             a = Dama();
         if(a >= 0){
             printf("Parabéns %s",player[a]);
-            AppendHighsocre(player[a],c);
+            AddHighscore(player[a],c);
         }
     }
     printf("\n\n \t Clique qualquer botão para voltar para o menu!\n\n");

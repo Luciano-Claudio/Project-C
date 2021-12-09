@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <conio.h>
 
-int AppendHighsocre(char name[20], int jogo){
+int AddHighscore(char name[20], int jogo){
 
     FILE *pont_arq;
     int game_dama = 0, game_velha = 0;
